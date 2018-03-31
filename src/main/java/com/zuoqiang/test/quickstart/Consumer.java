@@ -22,10 +22,15 @@ public class Consumer {
         */
         consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
         consumer.subscribe("TopicQuickStart", "*");
+        //设置批量消费数量，只在Producer先启动的情况下生效。
+        consumer.setConsumeMessageBatchMaxSize(10);
         consumer.registerMessageListener(new MessageListenerConcurrently() {
             public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
                 //System.out.println(Thread.currentThread().getName() + "Receive New Messages :" + msgs);
                 try {
+                    System.out.println("消息条数为：" + msgs.size());
+                    //先启动consumer,每次消费数量为1。
+                    //Message msg = msgs.get(0);
                     for (Message msg : msgs) {
                         String topic = msg.getTopic();
                         String msgBody = new String(msg.getBody(), "utf-8");
