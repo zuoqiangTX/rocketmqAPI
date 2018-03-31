@@ -39,13 +39,13 @@ public class Consumer {
                     //一定要注意先启动Consumer订阅消息，然后再启动Producer发送消息。
 
                     //失败一次看看，记得要先启动消费者，保证每次消费单条消息
-                        if (" Hello, World! 4".equals(msgBody)) {
+                        /*if (" Hello, World! 4".equals(msgBody)) {
                             System.out.println("============消息处理失败开始============");
                             System.out.println(message );
                             System.out.println(msgBody);
                             System.out.println("============消息处理失败结束============");
                             int n = 1 / 0;
-                        }
+                        }*/
                 } catch (Exception e) {
                     e.printStackTrace();
                     if (message.getReconsumeTimes() == 2) {
