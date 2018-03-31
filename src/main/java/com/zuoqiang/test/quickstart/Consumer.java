@@ -27,19 +27,32 @@ public class Consumer {
         consumer.registerMessageListener(new MessageListenerConcurrently() {
             public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
                 //System.out.println(Thread.currentThread().getName() + "Receive New Messages :" + msgs);
+                System.out.println("消息条数为：" + msgs.size());
+                //先启动consumer,每次消费数量为1,原子消费。
+                MessageExt message = msgs.get(0);
                 try {
-                    System.out.println("消息条数为：" + msgs.size());
-                    //先启动consumer,每次消费数量为1。
-                    //Message msg = msgs.get(0);
-                    for (Message msg : msgs) {
-                        String topic = msg.getTopic();
-                        String msgBody = new String(msg.getBody(), "utf-8");
-                        String tag = msg.getTags();
-                        System.out.println("收到消息: " + "Topic" + topic + ",Tags " + tag + ", msg : " + msgBody);
-                    }
-                } catch (UnsupportedEncodingException e) {
+                    String topic = message.getTopic();
+                    String msgBody = new String(message.getBody(), "utf-8");
+                    String tag = message.getTags();
+                    System.out.println("收到消息: " + "Topic" + topic + ",Tags " + tag + ", msg : " + msgBody);
+
+                    //一定要注意先启动Consumer订阅消息，然后再启动Producer发送消息。
+
+                    //失败一次看看，记得要先启动消费者，保证每次消费单条消息
+                        if (" Hello, World! 4".equals(msgBody)) {
+                            System.out.println("============消息处理失败开始============");
+                            System.out.println(message );
+                            System.out.println(msgBody);
+                            System.out.println("============消息处理失败结束============");
+                            int n = 1 / 0;
+                        }
+                } catch (Exception e) {
                     e.printStackTrace();
-                    //失败了稍后再次发送
+                    if (message.getReconsumeTimes() == 2) {
+                        //记录日志 ，操作等等
+                        System.out.println("重试2次，还是没有成功，记录相关日志，进行处理");
+                        return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+                    }
                     return ConsumeConcurrentlyStatus.RECONSUME_LATER;
                 }
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;

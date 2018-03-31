@@ -13,7 +13,7 @@ public class Producer {
         producer.setRetryTimesWhenSendFailed(3);
         producer.start();
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             Message message = new Message("TopicQuickStart", "TagA", (" Hello, World! " + i).getBytes());
             SendResult sendResult = null;
             try {
