@@ -6,6 +6,7 @@ import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import com.alibaba.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import com.alibaba.rocketmq.client.exception.MQClientException;
 import com.alibaba.rocketmq.common.message.MessageExt;
+import com.alibaba.rocketmq.common.protocol.heartbeat.MessageModel;
 
 import java.util.List;
 
@@ -15,6 +16,8 @@ public class Consumer1 {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(group_name);
         consumer.setNamesrvAddr("10.211.55.9:9876;10.211.55.13:9876");
         consumer.subscribe("Topic1", "Tag1||Tag2||Tag3");
+        //广播消费必须先启动Conusmer
+        consumer.setMessageModel(MessageModel.BROADCASTING);
         consumer.registerMessageListener(new Listener());
         consumer.start();
     }
@@ -30,7 +33,7 @@ public class Consumer1 {
                 String msgbody = new String(message.getBody(), "utf-8");
                 System.out.println("收到消息" + "Topic:" + topic + ",Tag:" + tag + ",MsgBody:" + msgbody);
                 //休眠一分钟表示业务处理失败
-                Thread.sleep(60000);
+                //Thread.sleep(60000);
             } catch (Exception e) {
                 e.printStackTrace();
                 return ConsumeConcurrentlyStatus.RECONSUME_LATER;
