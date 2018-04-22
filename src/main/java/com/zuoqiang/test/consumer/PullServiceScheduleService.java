@@ -27,7 +27,14 @@ public class PullServiceScheduleService {
                         case FOUND:
                             List<MessageExt> list = pullResult.getMsgFoundList();
                             for (MessageExt ext : list) {
-                                System.out.println(new String(ext.getBody()));
+
+                                try {
+                                    System.out.println(new String(ext.getBody()));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    //记录日志，存入数据库
+                                    continue;
+                                }
                             }
                             break;
                         case NO_MATCHED_MSG:
